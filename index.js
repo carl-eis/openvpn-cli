@@ -1,15 +1,46 @@
 import * as yargs from 'yargs';
-import {default as chalk} from 'chalk';
-import {default as clear} from 'clear';
-import {default as figlet} from 'figlet';
-import {execSync} from 'child_process';
+import { default as chalk } from 'chalk';
+import { default as clear } from 'clear';
+import { default as figlet } from 'figlet';
+import { execSync } from 'child_process';
 
-import {mainMenu, newUser} from './lib/inquirer.js';
+import { mainMenu, newUser } from './lib/inquirer.js';
 import * as files from './lib/files.js';
 
+// Hard-coded working directory
+const EASY_RSA_DIRECTORY = `/root/EasyRSA-3.0.4`;
+
 const createClient = (clientName) => {
-    console.log(chalk.red(`Creating new client: "${clientName}"`));
-    execSync(`/root/EasyRSA-3.0.4/easyrsa gen-req ${clientName} nopass`);
+    // Setup working directory config
+    const config = {
+        cwd: `${EASY_RSA_DIRECTORY}/`,
+    };
+
+    const commands = [{
+        info: `Generating client key for: "${clientName}"`,
+        command: `(echo "${clientName}" && cat) | ${EASY_RSA_DIRECTORY}/easyrsa gen-req ${clientName} nopass`,
+    }, {
+        info: `Coping key to keys folder: "${clientName}"`,
+        command: `cp pki/private/${clientName}.key ~/client-configs/keys/`,
+    }, {
+        info: `Signing client request: "${clientName}"`,
+        command: `(echo "yes" && cat) | ./easyrsa sign-req client ${clientName}`,
+    }, {
+        info: `Copying client certificate back to user keys directory`,
+        command: `cp pki/issued/${clientName}.crt /root/client-configs/keys`,
+    }, {
+        info: `Copying ca and ta files to config directory (1)`,
+        command: `cp ~/EasyRSA-3.0.4/ta.key ~/client-configs/keys/`,
+    }, {
+        info: `Copying ca and ta files to config directory (2)`,
+        command: `cp /etc/openvpn/ca.crt ~/client-configs/keys/`,
+    }]
+
+
+    commands.forEach(({ command, info }) => {
+        console.log('\n' + chalk.red(info));
+        execSync(command, config);
+    })
 }
 
 const main = async () => {
@@ -31,7 +62,7 @@ const main = async () => {
 
     const { selectedAction } = await mainMenu();
 
-    switch(selectedAction) {
+    switch (selectedAction) {
         case 'create_new': {
             const { clientName } = await newUser();
             createClient(clientName);
