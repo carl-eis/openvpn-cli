@@ -2,9 +2,15 @@ import * as yargs from 'yargs';
 import {default as chalk} from 'chalk';
 import {default as clear} from 'clear';
 import {default as figlet} from 'figlet';
+import {execSync} from 'child_process';
 
 import {mainMenu, newUser} from './lib/inquirer.js';
 import * as files from './lib/files.js';
+
+const createClient = (clientName) => {
+    console.log(chalk.red(`Creating new client: "${clientName}"`));
+    execSync(`/root/EasyRSA-3.0.4/easyrsa gen-req ${clientName} nopass`);
+}
 
 const main = async () => {
     clear();
@@ -28,7 +34,7 @@ const main = async () => {
     switch(selectedAction) {
         case 'create_new': {
             const { clientName } = await newUser();
-            console.log(clientName);
+            createClient(clientName);
             break;
         }
         case 'exit': {
