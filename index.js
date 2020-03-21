@@ -33,7 +33,7 @@ const createClient = (clientName) => {
         command: `cp ${EASY_RSA_DIRECTORY}/ta.key ~/client-configs/keys/`,
     }, {
         info: `Copying ca and ta files to config directory (2)`,
-        command: `/etc/openvpn/ca.crt ~/client-configs/keys/`,
+        command: `cp /etc/openvpn/ca.crt ~/client-configs/keys/`,
     }]
 
     commands.forEach(({ command, info }) => {
