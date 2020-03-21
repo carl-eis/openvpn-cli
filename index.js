@@ -19,7 +19,6 @@ const main = async () => {
 
     if (files.directoryExists('.git')) {
         console.log(chalk.red('Git repository detected!'));
-        process.exit(); 
     } else {
         // console.log(chalk.red('not a git repo yet!'));
     }
