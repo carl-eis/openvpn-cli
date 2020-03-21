@@ -30,12 +30,11 @@ const createClient = (clientName) => {
         command: `cp pki/issued/${clientName}.crt /root/client-configs/keys`,
     }, {
         info: `Copying ca and ta files to config directory (1)`,
-        command: `cp ~/EasyRSA-3.0.4/ta.key ~/client-configs/keys/`,
+        command: `cp ${EASY_RSA_DIRECTORY}/ta.key ~/client-configs/keys/`,
     }, {
         info: `Copying ca and ta files to config directory (2)`,
-        command: `cp /etc/openvpn/ca.crt ~/client-configs/keys/`,
+        command: `/etc/openvpn/ca.crt ~/client-configs/keys/`,
     }]
-
 
     commands.forEach(({ command, info }) => {
         console.log('\n' + chalk.red(info));
